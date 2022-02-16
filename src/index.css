@@ -14,7 +14,8 @@ code {
 
 .App {
   max-width: 900px;
-  margin: 20px auto;
+  margin: 0 auto;
+  padding: 20px 0;
 }
 
 .search {
@@ -38,7 +39,10 @@ code {
 }
 
 .article {
+  background: white;
   padding: 20px;
+  margin: 13px 0;
+  border-radius: 20px;
 }
 
 .article__title a {
@@ -46,7 +50,11 @@ code {
   font-size: 30px;
   text-decoration: none;
   font-weight: 900;
-  color: black;
+  color: navy;
+}
+
+.article__title a:hover {
+  color: #ff3333;
 }
 
 .article__text {
@@ -72,3 +80,39 @@ code {
   color: red;
   font-weight: bold;
 }
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background: rgba(216, 73, 73, 0.2); */
+  width: 100%;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.pagination-container a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  /* padding: 8px 14px; */
+  height: 40px;
+  width: 40px;
+  text-decoration: none;
+  transition: background-color .2s;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.pagination-container a.active {
+  background-color: #007bff;
+  color: white;
+  border: 1px solid #7cbddb;
+}
+
+.pagination-container a.disabled {
+  opacity: 0.2;
+}
+.pagination-container a:hover:not(.active) {background-color: rgb(238, 238, 238);}

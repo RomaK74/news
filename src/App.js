@@ -1,6 +1,9 @@
 import React from 'react';
 import axios from "axios";
 import './index.css';
+import {Article} from "./components/Article";
+import Pagination from "./components/Pagination";
+import {Input} from "./components/Input";
 
 function useDebounce(value, delay) {
     const [debouncedValue, setDebouncedValue] = React.useState(value);
@@ -23,7 +26,7 @@ function App() {
     const [searchValue, setSearchValue] = React.useState('');
     const [activePage, setActivePage] = React.useState(1);
     const debouncedSearchTerm = useDebounce(searchValue, 500);
-    const pages = [1, 2, 3, 4, 5];
+    const [countPages, setCountPages] = React.useState(0);
 
     React.useEffect(() => {
         setArticles([]);
@@ -34,7 +37,7 @@ function App() {
         if (searchValue)
             checkValue();
         else
-            getArticles();
+            search();
     }, [debouncedSearchTerm]);
 
     const checkValue = () => {
@@ -43,23 +46,29 @@ function App() {
         }
     };
 
-    const getArticles = async () => {
-        //const a = await axios.get('https://www.zhukvesti.ru/wp-json/wp/v2/posts');
-        //const q = a.headers['x-wp-totalpages'];
-        const {data} = await axios.get(`https://www.zhukvesti.ru/wp-json/wp/v2/posts?page=${activePage}&per_page=10`);
-        console.log(data);
-        await setArticles([...data]);
-    }
+    // const getArticles = async () => {
+    //     const a = await axios.get('https://www.zhukvesti.ru/wp-json/wp/v2/posts');
+    //     setCountArticles(Number(a.headers['x-wp-totalpages']));
+    //     console.log('hfhgjrfj' + countArticles)
+    //     const {data} = await axios.get(`https://www.zhukvesti.ru/wp-json/wp/v2/posts?page=${activePage}&per_page=10`);
+    //     console.log(data);
+    //     await setArticles([...data]);
+    // }
 
     const changeInput = (e) => {
         setSearchValue(e);
     }
 
     const search = async () => {
-        const {data} = await axios.get(`https://www.zhukvesti.ru/wp-json/wp/v2/posts?page=${activePage}&per_page=10&search=${searchValue}`);
-        console.log(data);
-        setArticles([]);
-        await setArticles(articles => [...articles, ...data]);
+        try {
+            const res = await axios.get(`https://www.zhukvesti.ru/wp-json/wp/v2/posts?page=${activePage}&per_page=10&search=${searchValue}`);
+            setCountPages(Number(res.headers['x-wp-totalpages']));
+            setArticles([]);
+            setArticles(articles => [...articles, ...res.data]);
+        } catch (e) {
+            console.log(e);
+            alert('Ошибка запроса')
+        }
     }
 
     // const short = (text) => {
@@ -87,11 +96,6 @@ function App() {
     //     return 0;
     // }
 
-    function strip(html) {
-        let tmp = document.createElement("DIV");
-        tmp.innerHTML = html;
-        return tmp.textContent || tmp.innerText;
-    }
 
     // function shazam(str) {
     //     str = str.replace(/[^а-яА-ЯёЁ ]/g, ''); // удалил все символы кроме букв и пробелов
@@ -105,28 +109,15 @@ function App() {
 
     return (
         <div className="App">
-            <div className="search">
-                <input type="text"
-                       value={searchValue}
-                       onChange={(e) => changeInput(e.target.value)}
-                       placeholder="Поиск..."/>
-                <button onClick={search}>Поиск</button>
-            </div>
+            <Input searchValue={searchValue}
+                   changeInput={changeInput}
+                   search={search}/>
             {articles && articles.map(article => (
-                <div key={article.id} className="article">
-                    <div className="article__title"><a href={article.link}>{strip(article.title.rendered)}</a></div>
-                    <div className="article__date">{article.date.replace('T', ' ')}</div>
-                    <div className="article__text">{strip(article.content.rendered).split('.')[0]}.</div>
-                </div>)
+                <Article key={article.id} {...article}/>)
             )}
-            <div className="pages">
-                {pages.map(page =>
-                    <div key={page}
-                         className={page !== activePage ? "page" : "page active"}
-                         onClick={() => setActivePage(page)}>
-                        {page}
-                    </div>)}
-            </div>
+            {countPages ?
+                <Pagination pages={countPages}
+                            setCurrentPage={setActivePage}/> : "Постов по такому запросу не найдено"}
         </div>
     );
 }
