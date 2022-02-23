@@ -10,7 +10,7 @@ export const Article = ({id, title, link, date, content}) => {
     return (
         <div key={id} className="article">
             <div className="article__title"><a href={link}>{strip(title.rendered)}</a></div>
-            <div className="article__date">{date.replace('T', ' ')}</div>
             <div className="article__text">{strip(content.rendered).split('.')[0]}.</div>
+            <div className="article__date">{date.replace('T', ' ').replaceAll('-', '.')}</div>
         </div>);
 }

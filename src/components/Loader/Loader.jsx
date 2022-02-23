@@ -1,20 +1,13 @@
-import React, { Component } from 'react';
-import './style.css';
+import React from 'react';
+import './Loader.css';
 
-
-export default class Preloader extends Component{
-    constructor(props){
-        super(props);
-        this.viewRef = React.createRef();
-    }
-    render(){
-        return(
-            <div ref={this.viewRef} className="preloader">
-                <div className="preloader__image_animate"></div>
-            </div>
-        );
-    }
-    componentWillUnmount(){
-        this.viewRef.current.style.opacity = 0;
-    }
-}
+export const Loader = () => (
+    <div className="loader">
+        <div className="lds-ring">
+            <div/>
+            <div/>
+            <div/>
+            <div/>
+        </div>
+    </div>
+);
